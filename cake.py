@@ -1,27 +1,10 @@
-"""
-I LOVE YOU cake  🎂
---------------------
-1. Cake text-layers se ban-ta hai (neeche se upar)
-2. Candles uthti hain aur jalti hain
-3. Candles ek ek karke blow hoti hain (dhuan uthta hai)
-4. Cake slowly fade ho kar gayab ho jata hai
+# I LOVE YOU cake  🎂 #
 
-Run:   python love_cake.py
-(Sirf Python + tkinter chahiye -- Windows pe pehle se installed hota hai.)
-
-Optional (Urdu/Arabic/Hebrew/Persian sahi dikhane ke liye):
-    pip install arabic-reshaper python-bidi
-"""
 import math
 import random
 import sys
 import time
 
-# ----------------------------------------------------------------------------
-#  SENTENCE / LANGUAGES  -- yahan apna sentence badal sakte ho
-# ----------------------------------------------------------------------------
-# Har language ke liye "I love you" ka apna translation. Kuch aur likhwana ho
-# to is list ko badal do (har entry me jo text likhoge cake pe wahi aayega).
 PHRASES = [
     "I love you", "Main tumse pyar karta hoon", "Te amo", "Je t'aime",
     "Ich liebe dich", "Ti amo", "Eu te amo", "Я тебя люблю", "愛してる",
@@ -42,27 +25,23 @@ PHRASES = [
     "Waan ku jeclahay", "Ina son ka", "Aroha ahau ki a koe",
 ]
 
-# ----------------------------------------------------------------------------
-#  SETTINGS
-# ----------------------------------------------------------------------------
 W, H = 780, 650
 BG = (0, 0, 0)
 FONT_SIZE = 10
 ROW_H = 17
-TIERS = [(5, 270), (6, 410), (7, 550)]          # (rows, width px) top -> bottom
+TIERS = [(5, 270), (6, 410), (7, 550)]          
 CANDLES = 5
 CANDLE_H = 85
 CANDLE_GAP = 40
-CORNER_R = 42                # cake ke corners ka radius (px) -- bada = zyada round
+CORNER_R = 42                
 
-# timeline (seconds)
-T_BUILD_ROW_STEP = 0.28      # cake rows ek ek karke
+T_BUILD_ROW_STEP = 0.28      
 T_CANDLE_RISE = 5.2
 T_LIGHT = 6.6
-T_COUNT = 3                  # blow se pehle 3..2..1 countdown (seconds)
-T_COUNT_START = 8.0          # countdown yahan se shuru
-T_BLOW = T_COUNT_START + T_COUNT   # pehli candle yahan bujhti hai
-T_BLOW_STEP = 0.06            # 0 = bilkul ek sath, chhota sa farq natural lagta hai
+T_COUNT = 3                  
+T_COUNT_START = 8.0          
+T_BLOW = T_COUNT_START + T_COUNT  
+T_BLOW_STEP = 0.06            
 T_FADE_START = 14.5
 T_FADE_DUR = 7.0
 T_END = T_FADE_START + T_FADE_DUR + 1.5
@@ -127,7 +106,7 @@ class CakeAnim:
         self.cx = W / 2
         self.cake_top = 250
         self.rng = random.Random(7)
-        self.items = []          # (id, rgb, row_order, delay)
+        self.items = []          
         self._build_cake()
         self._build_candles()
         self.count_id = self.c.create_text(self.cx, 62, text="", fill=mix((255, 200, 220), 0),
@@ -164,7 +143,7 @@ class CakeAnim:
         y = self.cake_top
         for tier_i, (rows, width) in enumerate(TIERS):
             for k in range(rows):
-                # har tier ek rounded rectangle: upar aur neeche ke corners gol
+    
                 d_top = (k + 0.5) * ROW_H
                 d_bot = (rows - k - 0.5) * ROW_H
                 inset = 0.0
@@ -175,9 +154,9 @@ class CakeAnim:
                 chosen = self._fit_row(pool, tw)
                 used = sum(self.widths[j] for j in chosen)
                 gap = (tw - used) / (len(chosen) - 1)
-                x = self.cx - tw / 2                       # left edge, bilkul flush
+                x = self.cx - tw / 2                       
                 col = row_color(row / (total_rows - 1))
-                order = total_rows - 1 - row               # neeche wali row pehle
+                order = total_rows - 1 - row               
                 for j in chosen:
                     w = self.widths[j]
                     tid = c.create_text(x + w / 2, y, text=pool[j], fill=mix(col, 0),
@@ -193,7 +172,7 @@ class CakeAnim:
     def _build_candles(self):
         c = self.c
         self.candles = []
-        order = [2, 0, 4, 1, 3]                           # bujhne ka order
+        order = [2, 0, 4, 1, 3]                           
         base_y = self.cake_top - 14
         for i in range(CANDLES):
             x = self.cx + (i - (CANDLES - 1) / 2) * CANDLE_GAP
@@ -213,12 +192,12 @@ class CakeAnim:
     # -- countdown 3..2..1 -----------------------------------------------------
     def _draw_countdown(self, t):
         c = self.c
-        k = int(t - T_COUNT_START)                       # 0,1,2 -> "3","2","1"
+        k = int(t - T_COUNT_START)                       
         if 0 <= t - T_COUNT_START < T_COUNT:
-            u = (t - T_COUNT_START) - k                  # 0..1 us number ke andar
+            u = (t - T_COUNT_START) - k                  
             num = T_COUNT - k
-            pop = smooth(u / 0.25)                       # tezi se aata hai
-            out = 1 - smooth((u - 0.7) / 0.3)            # end pe halka sa fade
+            pop = smooth(u / 0.25)                      
+            out = 1 - smooth((u - 0.7) / 0.3)           
             size = int(46 + 40 * (1 - pop) + 10 * u)
             c.itemconfig(self.count_id, text=str(num), font=(FONT, size, "bold"),
                          fill=mix((255, 205, 225), pop * out))
@@ -263,7 +242,7 @@ class CakeAnim:
                 for k in ("glow", "fl", "core"):
                     c.itemconfig(cd[k], state="hidden")
 
-            # smoke
+            
             age = t - cd["blow"] - 0.25
             for k, sm in enumerate(cd["smoke"]):
                 a = age - k * 0.18
